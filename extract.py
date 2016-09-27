@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -30,6 +31,10 @@ def extractAutItems(html):
     print 'valid imgs', len(imgs)
     return df
 
+def getCsvPath(htmlPath):
+    baseName=os.path.basename(htmlPath)
+    return htmlPath[:len(htmlPath)-len(baseName)]+baseName[:baseName.index('.')]+'.csv'
+
 
 class Test(ut.TestCase):
 
@@ -54,10 +59,15 @@ class Test(ut.TestCase):
         self.assertEqual(NOT_INTERESTED, df[
                          COL_INTERESTED][47])
 
+    def testGetCsvPath(self):
+        htmlpath='1.html'
+        self.assertEqual('1.csv',getCsvPath(htmlpath))
+        htmlpath='1/2.html'
+        self.assertEqual('1/2.csv',getCsvPath(htmlpath))
 
 if __name__ == '__main__':
-    f = open(sys.args[1])
+    f = open(sys.argv[1])
     htmlText = f.read()
     f.close()
     df = extractAutItems(htmlText)
-    # df.to_csv(sys.path.join(getFilePath(f), '.csv')
+    df.to_csv(getCsvPath(sys.argv[1]),encoding='utf-8',index=False)
