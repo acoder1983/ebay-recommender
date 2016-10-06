@@ -40,6 +40,7 @@ def vocFiles(beg, end):
 
 
 class TestVoc(ut.TestCase):
+
     def testSimple(self):
         items = ['D99294  Space  MNH Rwanda']
         df = voc(items)
@@ -59,19 +60,18 @@ class TestVoc(ut.TestCase):
 
 
 def composeVocFiles():
-    paths=os.listdir(DATA_DIR)
-    v={}
+    paths = os.listdir(DATA_DIR)
+    v = {}
     for p in paths:
         if p.startswith('voc'):
-            df=pd.read_csv(os.path.join(DATA_DIR,p))
+            df = pd.read_csv(os.path.join(DATA_DIR, p))
             print 'process %s' % p
-            for row in df:
-                print row[COL_WORD]
+            for idx, row in df.iterrows():
                 if row[COL_WORD] not in v:
-                    v[row[COL_WORD]]=row[COL_COUNT]
+                    v[row[COL_WORD]] = row[COL_COUNT]
                 else:
-                    v[row[COL_WORD]]+=row[COL_COUNT]
-    df=pd.DataFrame(columns=[COL_WORD, COL_COUNT])
+                    v[row[COL_WORD]] += row[COL_COUNT]
+    df = pd.DataFrame(columns=[COL_WORD, COL_COUNT])
     for w in v:
         df = df.append(
             {COL_WORD: w, COL_COUNT: v[w]}, ignore_index=True)
