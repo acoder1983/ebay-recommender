@@ -11,7 +11,7 @@ COL_INTERESTED = 'interested'
 SAMPLE_DATA_COLS = [COL_AUCITEM, COL_INTERESTED]
 INTERESTED = 'yes'
 NOT_INTERESTED = 'no'
-
+CLS_VALUES=[INTERESTED,NOT_INTERESTED]
 
 def extractAutItems(html):
     '''
@@ -47,7 +47,7 @@ class Test(ut.TestCase):
             'img')[0]['alt'])
 
     def testExtract(self):
-        f = open('data/1.html')
+        f = open('data/test.html')
         htmlText = f.read()
         f.close()
         df = extractAutItems(htmlText)

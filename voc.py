@@ -7,33 +7,38 @@ import unittest as ut
 from extract import *
 
 COL_WORD = 'word'
-COL_COUNT = 'count'
+COL_COUNT = 'counts'
 DATA_DIR = 'data'
 
-
-def voc(items):
+def countWords(items):
     df = pd.DataFrame(columns=[COL_WORD, COL_COUNT])
     v = {}
     for itm in items:
-        words = itm.split(' ')
+        words = extractWords(itm)
         for w in words:
-            if w.isalpha():
-                w = w.lower()
-                if w not in v:
-                    v[w] = 0
-                v[w.lower()] += 1
+            if w not in v:
+                v[w] = 0
+            v[w.lower()] += 1
     for w in v:
         df = df.append(
             {COL_WORD: w, COL_COUNT: v[w]}, ignore_index=True)
     return df
 
+def extractWords(item):
+    wds=[]
+    words = item.split(' ')
+    for w in words:
+        if w.isalpha():
+            w = w.lower()
+            wds.append(w)
+    return wds
 
 def vocFiles(beg, end):
     for i in xrange(beg, end + 1):
         p = os.path.join(DATA_DIR, str(i) + '.csv')
         df = pd.read_csv(p)
         print 'extract vocabulary from %s' % p
-        df = voc(df[COL_AUCITEM])
+        df = countWords(df[COL_AUCITEM])
         p = os.path.join(DATA_DIR, 'voc%d.csv ' % i)
         df.to_csv(p, encoding='utf-8', index=False)
         print 'save voc in %s' % p
@@ -43,7 +48,7 @@ class TestVoc(ut.TestCase):
 
     def testSimple(self):
         items = ['D99294  Space  MNH Rwanda']
-        df = voc(items)
+        df = countWords(items)
         print df
         self.assertEqual(df[COL_WORD].size, 3)
         print type(df[df[COL_WORD] == 'space'][COL_COUNT])
@@ -52,7 +57,7 @@ class TestVoc(ut.TestCase):
     def testMulti(self):
         items = ['T310 2010 UNION DES COMORES SPORT OLYMPIC GAMES 2008 PEKIN WINNERS KB+BL MNH',
                  'T311 2010 UNION DES COMORES CHESS LEGENDS LASKER KRAMNIK KASPAROV KB+BL MNH']
-        df = voc(items)
+        df = countWords(items)
         print df
         self.assertEqual(df[COL_WORD].size, 14)
         self.assertEqual(df[df[COL_WORD] == 'des'].iloc[0][COL_COUNT], 2)
